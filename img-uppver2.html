@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="img-uppver2.css">
+  <title>img-upver2</title>
+</head>
+<body>
+
+      <div class="container">
+        <h1>Firebaseへ画像保存</h1>
+        <div><input type="file" name="" id="fileButton" /></div>
+        <div>
+          <button id="up" class="up">アップロード</button>
+          <button id="down" class="disN">ダウンロード</button>
+        </div>
+        <div>
+          <p>画像のアップロード後、
+          <br />ダウンロードボタンをクリックした後、
+          <br />画像が表示されます。</p>
+
+          <img id="image" src="" alt="" width="100%" />
+        </div>
+        <div id="output" style="overflow:auto; height:300px;"></div>
+      </div>
+      
+      <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+      
+
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+    apiKey: "",
+    authDomain: "chat-img-kadai-493fc.firebaseapp.com",
+    projectId: "chat-img-kadai-493fc",
+    storageBucket: "chat-img-kadai-493fc.appspot.com",
+    messagingSenderId: "",
+    appId: ""
+  };
+
+        // Initialize Firebase
+      //const app = initializeApp(firebaseConfig);
+      firebase.initializeApp(firebaseConfig);
+        //firebase.analytics();
+      </script>
+
+      <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase-storage.js"></script>
+      <script src="img-uppver2.js"></script>
+  
+</body>
+</html>

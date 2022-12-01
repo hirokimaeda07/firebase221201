@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <title>Firebase</title>
+</head>
+
+<body>
+
+  <!-- コンテンツ表示画面 -->
+
+  <div>
+    <div> 名前：<input type="text" id="uname"> </div>
+    <div>
+      <textarea id="text" cols="30" rows="10"></textarea>
+      <button id="send">送信</button>
+    </div>
+
+    
+    <!-- sytle=overflow　で、記載したテキストの高さが300pxを超えたらスクロールバーを表示するような設定  -->
+    <div id="output" style="overflow:auto; height:300px;"></div>
+  </div>
+
+  
+  <!--/ コンテンツ表示画面 -->
+
+
+
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- JQuery -->
+
+
+<script></script>
+  <!--** 以下Firebase **-->
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+  import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+    from "https://www.gstatic.com/firebasejs/9.14.0/firebase-database.js";
+
+
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "",
+    authDomain: "chat-kadai-221127.firebaseapp.com",
+    projectId: "chat-kadai-221127",
+    storageBucket: "chat-kadai-221127.appspot.com",
+    messagingSenderId: "",
+    appId: ""
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const dbRef = ref(db,"chat");
+  //chatに階層を付けることができる。　chat/memo1とか特定のフォルダを創れる。
+
+  $("#send").on("click",function(){
+    const msg = {
+    uname : $("#uname").val(),
+    text : $("#text").val()
+    }
+
+    //チャットアプリは下記を使う
+    const newPostRef = push(dbRef);//ファイヤーベース上にユニークキー（ランダム）が発行されるので、上書きされない。
+    set(newPostRef,msg);//newPostRefは上記のランダムキー、msgに上記でuname+textのデータが入る。
+
+    //メモアプリは下記を使う。＆53行目のconst dbRefの中を、chat/フォルダ名とすると特定のフォルダに入る。上書きになるので注意。
+    //set(dbRef, msg);
+  });
+
+  //保存されたデータを追加表示する
+  onChildAdded(dbRef,function(data){
+    const msg = data.val();
+    const key = data.key; //ユニークkey
+    let h='<p>';
+      h += msg.uname;
+      h += '<br>';
+      h += msg.text;
+      h += '</p>';
+      $("#output").append(h);
+  });
+
+  // Signs-in Friendly Chat.
+  function signIn() {
+    // Sign into Firebase using popup auth & Google as the identity provider.
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider);
+  }
+
+
+  // Saves a new message containing an image in Firebase.
+  // This first saves the image in Firebase storage.
+  function saveImageMessage(file) {
+    // 1 - We add a message with a loading icon that will get updated with the shared image.
+    firebase.firestore().collection('messages').add({
+      name: getUserName(),
+      imageUrl: LOADING_IMAGE_URL,
+      profilePicUrl: getProfilePicUrl(),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function (messageRef) {
+      // 2 - Upload the image to Cloud Storage.
+      var filePath = firebase.auth().currentUser.uid + '/' + messageRef.id + '/' + file.name;
+      return firebase.storage().ref(filePath).put(file).then(function (fileSnapshot) {
+        // 3 - Generate a public URL for the file.
+        return fileSnapshot.ref.getDownloadURL().then((url) => {
+          // 4 - Update the chat message placeholder with the image's URL.
+          return messageRef.update({
+            imageUrl: url,
+            storageUri: fileSnapshot.metadata.fullPath
+          });
+        });
+      });
+    }).catch(function (error) {
+      console.error('There was an error uploading a file to Cloud Storage:', error);
+    });
+  }
+
+
+
+</script>
+
+
+</body>
+
+</html>
